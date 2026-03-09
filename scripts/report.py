@@ -242,7 +242,7 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
         <html>
             <head>
                 <meta http-equiv="refresh" content="0; url=_HTML/index.html" />
-                <title>ALEAPP Report</title>
+                <title>DLEAPP Report</title>
             </head>
         </html>
         """
