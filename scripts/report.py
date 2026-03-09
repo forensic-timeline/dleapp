@@ -6,7 +6,7 @@ import shutil
 from collections import OrderedDict
 from scripts.html_parts import *
 from scripts.ilapfuncs import logfunc
-from scripts.version_info import aleapp_version, aleapp_contributors
+from scripts.version_info import aleapp_version, aleapp_contributors, dleapp_version
 from scripts.report_icons import icon_mappings, feather_icon_names
 
 def get_icon_name(category, artifact):
@@ -219,16 +219,16 @@ def create_index_html(reportfolderbase, time_in_secs, time_HMS, extraction_type,
 
     # WRITE INDEX.HTML LAST
     filename = 'index.html'
-    page_title = 'ALEAPP Report'
-    body_heading = 'Android Logs Events And Protobuf Parser'
-    body_description = 'ALEAPP is an open source project that aims to parse every known Android artifact for the purpose of forensic analysis.'
+    page_title = 'DLEAPP Report'
+    body_heading = 'Drone Logs Events And Protobuf Parser'
+    body_description = 'DLEAPP is an open source project that aims to parse every known Drone artifact for the purpose of forensic analysis.'
     active_nav_list_data = mark_item_active(nav_list_data, filename) + nav_bar_script
 
     html_reportfolderbase = Path(reportfolderbase).joinpath('_HTML')
     html_reportfolderbase.mkdir(exist_ok=True)
     with html_reportfolderbase.joinpath(filename).open('w', encoding='utf8') as f:
         f.write(page_header.format(page_title))
-        f.write(body_start.format(f"ALEAPP {aleapp_version}"))
+        f.write(body_start.format(f"DLEAPP {dleapp_version}"))
         f.write(body_sidebar_setup + active_nav_list_data + body_sidebar_trailer)
         f.write(body_main_header + body_main_data_title.format(body_heading, body_description))
         f.write(content)

@@ -1,4 +1,4 @@
-![ALEAPP](assets/ALEAPP_logo.png)
+![DLEAPP](assets/DLEAPP_banner.png)
 
 # Android Logs Events And Protobuf Parser
 
@@ -19,44 +19,18 @@ the `py` part is correct for your environment, eg `py`, `python`, or `python3`, 
 or
 `pip3 install -r requirements.txt`
 
-To run on **Linux**, you will also need to install `tkinter` separately like so:
-
-`sudo apt-get install python3-tk`
-
-## Compile to executable
-
-To compile to an executable so you can run this on a system without python installed.
-
-To create aleapp.exe, run:
-
-```
-pyinstaller --onefile aleapp.spec
-```
-
-To create aleappGUI.exe, run:
-
-```
-pyinstaller --onefile --noconsole aleappGUI.spec
-```
-
 ## Usage
-
+This process is executed in a Linux environment, please adjust the needs due to this limitation.
 ### CLI
 
 ```
-$ python aleapp.py -t <zip | tar | fs | gz> -i <path_to_extraction> -o <path_for_report_output>
-```
-
-### GUI
-
-```
-$ python aleappGUI.py
+$ python3 dleapp.py -t <raw | ewf> -i <path_to_extraction> -o <path_for_report_output>
 ```
 
 ### Help
 
 ```
-$ python aleapp.py --help
+$ python3 dleapp.py --help
 ```
 
 ## Contributing artifact plugins
@@ -172,6 +146,4 @@ def get_cool_data1(files_found, report_folder, seeker, wrap_text):
 
 ## Acknowledgements
 
-This tool is the result of a collaborative effort of many people in the DFIR community.
-
-ALEAPP logo courtesy of Derek Eiri.
+This tool is an idea from Mr. Alexis and his contributor with collaboration with our lecturer.
