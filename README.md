@@ -26,6 +26,11 @@ This process is executed in a Linux environment, please adjust the needs due to 
 ```
 $ python3 dleapp.py -t <raw | ewf> -i <path_to_extraction> -o <path_for_report_output>
 ```
+### GUI
+
+```
+$ python3 dleappGUI.py
+```
 
 ### Help
 

@@ -9,7 +9,7 @@ import scripts.plugin_loader as plugin_loader
 
 from PIL import Image, ImageTk
 from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
-from scripts.version_info import aleapp_version
+from scripts.version_info import aleapp_version, dleapp_version
 from scripts.search_files import *
 from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
@@ -83,7 +83,7 @@ def load_profile():
 
     destination_path = tk_filedialog.askopenfilename(parent=main_window, 
                                                      title='Load a profile', 
-                                                     filetypes=(('ALEAPP Profile', '*.alprofile'),))
+                                                     filetypes=(('DLEAPP Profile', '*.alprofile'),))
 
     if destination_path and os.path.exists(destination_path):
         profile_load_error = None
@@ -94,7 +94,7 @@ def load_profile():
                 profile_load_error = 'File was not a valid profile file: invalid format'
         if not profile_load_error:
             if isinstance(profile, dict):
-                if profile.get('leapp') != 'aleapp' or profile.get('format_version') != 1:
+                if profile.get('leapp') != 'dleapp' or profile.get('format_version') != 1:
                     profile_load_error = 'File was not a valid profile file: incorrect LEAPP or version'
                 else:
                     deselect_all()
@@ -117,13 +117,13 @@ def save_profile():
     '''Save selected modules in a profile file'''
     destination_path = tk_filedialog.asksaveasfilename(parent=main_window, 
                                                        title='Save a profile', 
-                                                       filetypes=(('ALEAPP Profile', '*.alprofile'),),
+                                                       filetypes=(('DLEAPP Profile', '*.alprofile'),),
                                                        defaultextension='.alprofile')
 
     if destination_path:
         selected_modules = get_selected_modules()
         with open(destination_path, 'wt', encoding='utf-8') as profile_out:
-            json.dump({'leapp': 'aleapp', 'format_version': 1, 'plugins': selected_modules}, profile_out)
+            json.dump({'leapp': 'dleapp', 'format_version': 1, 'plugins': selected_modules}, profile_out)
         tk_msgbox.showinfo(
             title='Save a profile', message=f'Profile saved: {destination_path}', parent=main_window)
 
@@ -201,7 +201,7 @@ def process(casedata):
 
         # re-create modules list based on user selection
         selected_modules = get_selected_modules()
-        selected_modules.insert(0, 'usagestatsVersion') # Force usagestatsVersion as first item to be parsed
+        # selected_modules.insert(0, 'usagestatsVersion') Force usagestatsVersion as first item to be parsed(skipped for drone)
         selected_modules = [loader[module] for module in selected_modules]
         progress_bar.config(maximum=len(selected_modules))
         casedata = {key: value.get() for key, value in casedata.items()}
@@ -244,9 +244,12 @@ def select_input(button_type):
     if button_type == 'file':
         input_filename = tk_filedialog.askopenfilename(parent=main_window,
                                                        title='Select a file',
-                                                       filetypes=(('All supported files', '*.tar *.zip *.gz'),
-                                                                  ('tar file', '*.tar'), ('zip file', '*.zip'),
-                                                                  ('gz file', '*.gz')))
+                                                       filetypes=(('All supported files', '*.tar *.zip *.gz *.ewf *.E01 *.001 *.dd *.raw'),
+                                                                  ('tar file', '*.tar'), 
+                                                                  ('zip file', '*.zip'),
+                                                                  ('gz file', '*.gz'),
+                                                                  ('EWF Image', '*.ewf *.e01'),
+                                                                  ('Raw Image', '*.001 *.dd *.raw')))
     else:
         input_filename = tk_filedialog.askdirectory(parent=main_window, title='Select a folder')
     input_entry.delete(0, 'end')
@@ -443,7 +446,7 @@ modules_filter_var.trace_add("write", filter_modules)  # Trigger filtering on in
 pickModules()
 
 ## Theme properties
-theme_bgcolor = '#586A60'
+theme_bgcolor = "#464646"
 theme_inputcolor = '#fcfff6'
 theme_fgcolor = '#d0dbbd'
 theme_button = '#d0dbbd'
@@ -466,7 +469,7 @@ margin_height = (screen_height - window_height) // 2
 
 ## Main window properties
 main_window.geometry(f'{window_width}x{window_height}+{margin_width}+{margin_height}')
-main_window.title(f'ALEAPP version {aleapp_version}')
+main_window.title(f'DLEAPP version {dleapp_version}')
 main_window.resizable(False, False)
 main_window.configure(bg=theme_bgcolor)
 logo_icon = tk.PhotoImage(file=icon)
@@ -498,7 +501,7 @@ style.configure('TProgressbar', thickness=4, background='DarkGreen')
 title_frame = ttk.Frame(main_window)
 title_frame.grid(padx=14, pady=8, sticky='we')
 title_frame.grid_columnconfigure(0, weight=1)
-ileapp_logo = ImageTk.PhotoImage(file=resource_path("ALEAPP_logo.png"))
+ileapp_logo = ImageTk.PhotoImage(file=resource_path("DLEAPP_logo.png"))
 ileapp_logo_label = ttk.Label(title_frame, image=ileapp_logo)
 ileapp_logo_label.grid(row=0, column=0, sticky='w')
 leapps_logo = ImageTk.PhotoImage(Image.open(resource_path("leapps_a_logo.png")).resize((110, 51)))
@@ -509,7 +512,7 @@ leapps_logo_label.bind("<Button-1>", lambda e: open_website("https://leapps.org"
 ### Input output selection
 input_frame = ttk.LabelFrame(
     main_window, 
-    text=' Select the file (tar/zip/gz) or directory of the target Android full file system extraction for parsing: ')
+    text=' Select the file (tar/zip/gz/ewf/raw) or directory of the target Drone full file system extraction for parsing: ')
 input_frame.grid(padx=14, pady=2, sticky='we')
 input_frame.grid_columnconfigure(0, weight=1)
 input_entry = ttk.Entry(input_frame)
