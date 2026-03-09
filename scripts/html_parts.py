@@ -136,7 +136,7 @@ body_main_header = \
 body_main_data_title = \
 """
                 <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <img src="_elements/ALEAPP_banner.png" alt="ALEAPP banner">
+                    <img src="_elements/DLEAPP_banner.png" alt="ALEAPP banner">
                     <h3 class="display-5">{0}</h1>
                     <h6 class="animated fadeIn mb-3">{1}</h6>
                 </div>
@@ -175,8 +175,8 @@ r"""
                     </table>
                 </div>
                 <div class="androidevents">
-                    <h1>Android Events</h1>
-                    <h1>Android Events</h1>
+                    <h1>Drone Events</h1>
+                    <h1>Drone Events</h1>
                 </div>
 """
 # tabs code for Case information in index.html
@@ -213,17 +213,17 @@ thank_you_note = \
                     <div class="card bg-white mb-3" style="max-width: 500px; margin:auto">
                         <div class="row no-gutters">
                             <center><div class="col-md-4">
-                                <img src="_elements/logo.png" class="card-img" alt="ALEAPP logo">
+                                <img src="_elements/logo.png" class="card-img" alt="DLEAPP logo">
                             </div>
                             <div class="col-md-8">
                             <div class="card-body" style="height: 200px;">
-                                <h5 class="card-title">Thank you for using ALEAPP</h5>
+                                <h5 class="card-title">Thank you for using DLEAPP</h5>
                                 <p class="card-text">
                                     Support open source and report any bugs!
                                 </p>
                                 <!--Github-->
-                                <a class="btn-floating btn-git" type="button" role="button" href="https://github.com/abrignoni/aleapp" target="_blank"><i class="fab fa-github"></i> Project Home </a>
-                                <p class="card-text fadeIn"><small class="text-muted">ALEAPP Team</small></p>
+                                <a class="btn-floating btn-git" type="button" role="button" href="https://github.com/forensic-timeline/dleapp.git" target="_blank"><i class="fab fa-github"></i> Project Home </a>
+                                <p class="card-text fadeIn"><small class="text-muted">DLEAPP Team</small></p>
                             </div>
                             </div></center>
                         </div>
@@ -237,7 +237,7 @@ thank_you_note = \
 credits_block = \
 """
     <div class="alert alert-light mb-4 bg-white" style="border-style: none">
-        <h4 class="text-center">ALEAPP contributors</h4>
+        <h4 class="text-center">Thanks to ALEAPP contributors</h4>
         <ul class="list-group" style="max-width: 500px; margin:auto">
             {}
         </ul>
