@@ -37,7 +37,7 @@ def validate_args(args):
         raise argparse.ArgumentError(None, 'LEAPP Case Data file not found! Run the program again.')
 
     if args.load_profile and not os.path.exists(args.load_profile):
-        raise argparse.ArgumentError(None, 'ALEAPP Profile file not found! Run the program again.')
+        raise argparse.ArgumentError(None, 'DLEAPP Profile file not found! Run the program again.')
 
 
 def create_profile(plugins, path):
@@ -46,7 +46,7 @@ def create_profile(plugins, path):
     modules_in_profile = {}
 
     user_choice = ''
-    print('--- ALEAPP Profile file creation ---\n')
+    print('--- DLEAPP Profile file creation ---\n')
     instructions = 'You can type:\n'
     instructions += '   - \'a\' to add or remove modules in the profile file\n'
     instructions += '   - \'l\' to display the list of all available modules with their number\n'
@@ -99,7 +99,7 @@ def create_profile(plugins, path):
                 profile_filename += '.alprofile'
                 filename = os.path.join(path, profile_filename)
                 with open(filename, "wt", encoding="utf-8") as profile_file:
-                    json.dump({"leapp": "aleapp", "format_version": 1, "plugins": modules}, profile_file)
+                    json.dump({"leapp": "dleapp", "format_version": 1, "plugins": modules}, profile_file)
                 print('\nProfile saved:', filename)
                 print()
             else:
@@ -130,7 +130,7 @@ def create_casedata(path):
     return
 
 def main():
-    parser = argparse.ArgumentParser(description='ALEAPP: Android Logs, Events, and Protobuf Parser.')
+    parser = argparse.ArgumentParser(description='DLEAPP: Android Logs, Events, and Protobuf Parser.')
     parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz', 'ewf', 'raw'], required=False, action="store",
                         help=("Specify the input type. "
                               "'fs' for a folder containing extracted files with normal paths and names, "
@@ -141,10 +141,10 @@ def main():
     parser.add_argument('-i', '--input_path', required=False, action="store", help='Path to input file/folder')
     parser.add_argument('-w', '--wrap_text', required=False, action="store_false", default=True,
                         help='Do not wrap text for output of data files')
-    parser.add_argument('-m', '--load_profile', required=False, action="store", help="Path to ALEAPP Profile file (.alprofile).")
+    parser.add_argument('-m', '--load_profile', required=False, action="store", help="Path to DLEAPP Profile file (.alprofile).")
     parser.add_argument('-d', '--load_case_data', required=False, action="store", help="Path to LEAPP Case Data file (.lcasedata).")
     parser.add_argument('-c', '--create_profile_casedata', required=False, action="store",
-                        help=("Generate an ALEAPP Profile file (.alprofile) or LEAPP Case Data file (.lcasedata) into the specified path. "
+                        help=("Generate an DLEAPP Profile file (.alprofile) or LEAPP Case Data file (.lcasedata) into the specified path. "
                               "This argument is meant to be used alone, without any other arguments."))
     parser.add_argument('-p', '--artifact_paths', required=False, action="store_true",
                         help=("Generate a text file list of artifact paths. "
@@ -199,9 +199,9 @@ def main():
         if os.path.isdir(args.create_profile_casedata):
             create_choice = ''
             print('-' * 55)
-            print('Welcome to ALEAPP Profile or Case Data file creation\n')
+            print('Welcome to DLEAPP Profile or Case Data file creation\n')
             instructions = 'You can type:\n'
-            instructions += '   - \'1\' to create an ALEAPP Profile file (.alprofile)\n'
+            instructions += '   - \'1\' to create an DLEAPP Profile file (.alprofile)\n'
             instructions += '   - \'2\' to create a LEAPP Case Data file (.lcasedata)\n'
             instructions += '   - \'q\' to quit\n'
             while not create_choice:
@@ -220,7 +220,7 @@ def main():
                     print('Please enter a valid choice!!!\n')
                     create_choice = ''
         else:
-            print('OUTPUT folder for storing ALEAPP Profile file does not exist!\nRun the program again.')
+            print('OUTPUT folder for storing DLEAPP Profile file does not exist!\nRun the program again.')
             return
 
     if args.load_case_data:
@@ -261,7 +261,7 @@ def main():
 
         if not profile_load_error:
             if isinstance(profile, dict):
-                if profile.get("leapp") != "aleapp" or profile.get("format_version") != 1:
+                if profile.get("leapp") != "dleapp" or profile.get("format_version") != 1:
                     profile_load_error = "File was not a valid profile file: incorrect LEAPP or version"
                     print(profile_load_error)
                     return
@@ -305,7 +305,7 @@ def crunch_artifacts(
     logfunc('Processing started. Please wait. This may take a few minutes...')
 
     logfunc('\n--------------------------------------------------------------------------------------')
-    logfunc(f'DLEAPP v1.0: DLEAPP Logs, Events, and Protobuf Parser')
+    logfunc(f'DLEAPP v1.0: Drone Logs, Events, and Protobuf Parser')
     logfunc('Objective: Triage Drone Full System Extractions.')
     logfunc('Based on ALEAPP by Alexis Brignoni and Yogesh Khatri\n')
     logdevinfo()
@@ -320,7 +320,7 @@ def crunch_artifacts(
 
         elif extracttype == 'zip':
             seeker = FileSeekerZip(input_path, out_params.data_folder)
-        elif extracttype in ('ewf', 'raw'):
+        elif extracttype in ('ewf', 'raw', '001', 'E01'):
             logfunc(f'Acquisition type selected: {extracttype}. Starting extraction...')
             recurse.run_extraction(input_path, extracttype, out_params.data_folder)
             input_path = out_params.data_folder
