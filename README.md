@@ -1,6 +1,6 @@
 ![DLEAPP](assets/DLEAPP_logo.png)
 
-# Android Logs Events And Protobuf Parser
+# Drone Logs Events And Protobuf Parser
 
 If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrignoni
 
