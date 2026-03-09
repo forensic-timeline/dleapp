@@ -1,4 +1,4 @@
-![DLEAPP](assets/DLEAPP_banner.png)
+![DLEAPP](assets/DLEAPP_logo.png)
 
 # Android Logs Events And Protobuf Parser
 
