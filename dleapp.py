@@ -14,6 +14,8 @@ from scripts.ilapfuncs import *
 from scripts.version_info import aleapp_version
 from time import process_time, gmtime, strftime, perf_counter
 from scripts.lavafuncs import *
+from scripts.artifacts.DjiDat import get_dji_dat
+from pathlib import Path
 
 def validate_args(args):
     if args.artifact_paths or args.create_profile_casedata:
@@ -131,7 +133,7 @@ def create_casedata(path):
 
 def main():
     parser = argparse.ArgumentParser(description='DLEAPP: Android Logs, Events, and Protobuf Parser.')
-    parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz', 'ewf', 'raw'], required=False, action="store",
+    parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz', 'ewf', 'raw', 'dat'], required=False, action="store",
                         help=("Specify the input type. "
                               "'fs' for a folder containing extracted files with normal paths and names, "
                               "'tar', 'zip', or 'gz' for compressed packages containing files with normal names. "
@@ -320,13 +322,74 @@ def crunch_artifacts(
 
         elif extracttype == 'zip':
             seeker = FileSeekerZip(input_path, out_params.data_folder)
-        elif extracttype in ('ewf', 'raw', '001', 'E01'):
+        elif extracttype in ('ewf', 'raw', '001', 'E01', 'e01'):
             logfunc(f'Acquisition type selected: {extracttype}. Starting extraction...')
             recurse.run_extraction(input_path, extracttype, out_params.data_folder)
             input_path = out_params.data_folder
             extracttype = 'fs'
             logfunc('Extraction completed. Proceeding to artifact processing...')
             seeker = FileSeekerDir(input_path, out_params.data_folder)
+        elif extracttype.lower() == 'dat':
+            dat_file = Path(input_path)
+
+            if not dat_file.exists():
+                raise FileNotFoundError(f"DAT file not found: {dat_file}")
+
+            if dat_file.suffix.upper() != ".DAT":
+                raise ValueError("Input type is DAT, but file extension is not .DAT")
+
+            logfunc(f'DAT input selected: {dat_file}. Starting DAT parser test mode...')
+
+            # Create required Script Logs folder and ProcessedFilesLog.html
+            script_logs_folder = os.path.join(out_params.report_folder_base, 'Script Logs')
+            os.makedirs(script_logs_folder, exist_ok=True)
+
+            processed_files_log = os.path.join(script_logs_folder, 'ProcessedFilesLog.html')
+            with open(processed_files_log, 'w+', encoding='utf8') as log:
+                log.write(f'Extraction/Path selected: {str(dat_file)}<br><br>')
+                log.write('<b>DAT direct parser test mode</b>')
+                log.write(f'<ul><li>1 file selected directly: {str(dat_file)}</li></ul>')
+
+            category_folder = os.path.join(
+                out_params.report_folder_base,
+                '_HTML',
+                'Drone'
+            )
+            os.makedirs(category_folder, exist_ok=True)
+
+            get_dji_dat(
+                files_found=[dat_file],
+                report_folder=category_folder,
+                seeker=None,
+                wrap_text=wrap_text
+            )
+
+            logfunc('DAT parser test completed.')
+
+            write_device_info()
+
+            end = process_time()
+            end_wall = perf_counter()
+
+            run_time_secs = end - start
+            run_time_HMS = strftime('%H:%M:%S', gmtime(run_time_secs))
+
+            report.generate_report(
+                out_params.report_folder_base,
+                run_time_secs,
+                run_time_HMS,
+                extracttype,
+                str(dat_file),
+                casedata,
+                profile_filename,
+                icons
+            )
+
+            logfunc('')
+            logfunc('Report generation Completed.')
+            logfunc(f'Report location: {out_params.report_folder_base}')
+
+            return True
         else:
             logfunc('Error on argument -o (input type)')
             return False

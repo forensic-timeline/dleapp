@@ -2,9 +2,7 @@
 
 # Drone Logs Events And Protobuf Parser
 
-If you want to contribute hit me up on twitter: https://twitter.com/AlexisBrignoni
-
-Details in blog post here: https://abrignoni.blogspot.com/2020/02/aleapp-android-logs-events-and-protobuf.html
+DLEAPP (Drone Logs, Events and Protobuf Parser) is a plugin-based forensic parser for DJI drone data, built on the ALEAPP architecture. Given an acquired filesystem or directory, it recursively locates known DJI artifacts and converts them into structured reports of flight events, timestamps, and GPS data.
 
 ## Requirements
 
@@ -40,9 +38,9 @@ $ python3 dleapp.py --help
 
 ## Contributing artifact plugins
 
-Each plugin is a Python source file which should be added to the `scripts/artifacts` folder which will be loaded dynamically each time ALEAPP is run.
+Each plugin is a Python source file which should be added to the `scripts/artifacts` folder which will be loaded dynamically each time DLEAPP is run.
 
-The plugin source file must contain a dictionary named `__artifacts_v2__` at the very beginning of the module, which defines the artifacts that the plugin processes. The keys in the `__artifacts_v2__` dictionary should be IDs for the artifact(s) which must be unique within ALEAPP. The values should be dictionaries containing the following keys:
+The plugin source file must contain a dictionary named `__artifacts_v2__` at the very beginning of the module, which defines the artifacts that the plugin processes. The keys in the `__artifacts_v2__` dictionary should be IDs for the artifact(s) which must be unique within DLEAPP. The values should be dictionaries containing the following keys:
 
 - `name`: The name of the artifact as a string.
 - `description`: A description of the artifact as a string.
@@ -89,7 +87,7 @@ __artifacts_v2__ = {
 The functions referenced as entry points in the `__artifacts__` dictionary must take the following arguments:
 
 - An iterable of the files found which are to be processed (as strings)
-- The path of ALEAPP's output folder(as a string)
+- The path of DLEAPP's output folder(as a string)
 - The seeker (of type FileSeekerBase) which found the files
 - A Boolean value indicating whether or not the plugin is expected to wrap text
 
@@ -100,7 +98,7 @@ def get_cool_data1(files_found, report_folder, seeker, wrap_text):
     pass  # do processing here
 ```
 
-Plugins are generally expected to provide output in ALEAPP's HTML output format, TSV, and optionally submit records to
+Plugins are generally expected to provide output in DLEAPP's HTML output format, TSV, and optionally submit records to
 the timeline. Functions for generating this output can be found in the `artifact_report` and `ilapfuncs` modules.
 At a high level, an example might resemble:
 
