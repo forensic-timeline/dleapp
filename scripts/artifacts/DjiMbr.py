@@ -1,4 +1,3 @@
-import struct 
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc
 

@@ -1,5 +1,4 @@
 import struct
-import re
 from scripts.artifact_report import ArtifactHtmlReport
 from scripts.ilapfuncs import logfunc
 
@@ -17,16 +16,6 @@ def get_dji_sys(files_found, report_folder, seeker, wrap_text):
                     counter = struct.unpack('<I', content[7:11])[0]
                     status = content[12]
                     data_list.append((hex(field_1), counter, status, file_found))
-                
-                # Extraction for serial number pattern usually alphanumeric
-                # sn_match = re.search(r'([A-Z0-9]{14,16})', content.decode(errors='ignore'))
-                # sn = sn_match.group(0) if sn_match else 'N/A'
-                
-                # # Extraction for DJI model 
-                # model_match = re.search(r'(DJI\s[\w\s]+)', content.decode(errors='ignore'))
-                # model = model_match.group(0) if model_match else 'N/A'
-                
-                # data_list.append((model, sn, file_found))
     
     if data_list:
         report = ArtifactHtmlReport('DJI SYS Info')
