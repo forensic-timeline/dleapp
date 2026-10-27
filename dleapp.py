@@ -132,7 +132,7 @@ def create_casedata(path):
     return
 
 def main():
-    parser = argparse.ArgumentParser(description='DLEAPP: Android Logs, Events, and Protobuf Parser.')
+    parser = argparse.ArgumentParser(description='DLEAPP: Drone Logs, Events, and Protobuf Parser.')
     parser.add_argument('-t', choices=['fs', 'tar', 'zip', 'gz', 'ewf', 'raw', 'dat'], required=False, action="store",
                         help=("Specify the input type. "
                               "'fs' for a folder containing extracted files with normal paths and names, "

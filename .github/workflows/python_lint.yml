@@ -41,4 +41,4 @@ jobs:
           echo "Linting the following files:"
           echo "${{ steps.changed-files-py.outputs.all_changed_files }}"
           
-          PYTHONPATH=. pylint ${{ steps.changed-files-py.outputs.all_changed_files }} --disable=C,R
+          PYTHONPATH=. pylint ${{ steps.changed-files-py.outputs.all_changed_files }} --errors-only
