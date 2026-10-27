@@ -356,7 +356,7 @@ def analyze_fat_entries(fat, max_cluster):
     }
 
 
-def get_dji_fat(files_found, report_folder):
+def get_dji_fat(files_found, report_folder, seeker, wrap_text):
     data_list = []
 
     for file_found in files_found:
