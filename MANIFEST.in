@@ -1,0 +1,12 @@
+exclude .gitignore
+prune backup_artifacts_android
+prune dleappvenv
+prune .venv
+prune venv
+prune build
+prune admin
+prune dist
+prune .git
+global-exclude *.py[cod]
+global-exclude .DS_Store
+global-exclude *.pyc *.pyo *.pyd

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dleapp"
-version = "0.1.0"
+version = "1.1.0"
 description = "Digital forensics parser for DJI drone artifacts"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -16,19 +16,34 @@ py-modules = ["dleapp", "dleappGUI"]
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["scripts*", "admin*", "assets*"]
+include = ["scripts*", "assets*"]
 exclude = [
     "tests*",
     "backup_artifacts_android*",
     "dleappvenv*",
-    "__pycache__*"
+    "*__pycache__*",
+    "admin"
 ]
 namespaces = true
+
+[tool.setuptools.exclude-package-data]
+"*" = [
+    "*.pyc",
+    "*.pyo",
+    "*.pyd",
+    "**/*.pyc",
+    "**/*.pyo",
+    "**/*.pyd",
+    "__pycache__/*",
+    "**/__pycache__/*"
+]
 
 [tool.setuptools.package-data]
 assets = ["*", "**/*"]
 scripts = ["*", "**/*"]
-admin = ["*", "**/*"]
 
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.txt"] }
+
+[project.scripts]
+dleapp = "dleapp:main"
