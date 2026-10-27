@@ -27,6 +27,50 @@ def check_sum(data):
         v = (v >> 8) ^ crc_table[(i ^ v) & 0xFF]
     return v
 
+def is_valid_packet(data, offset):
+    """Validate whether offset points to a DJI packet."""
+
+    if offset + 12 >= len(data):
+        return False
+
+    # Magic byte
+    if data[offset] != 0x55:
+        return False
+
+    length = data[offset + 1]
+
+    # Invalid length
+    if length < 10:
+        return False
+
+    if offset + length > len(data):
+        return False
+
+    crc = check_sum(data[offset:offset+length-2])
+
+    return (
+        (crc & 0xFF) == data[offset+length-2]
+        and
+        (crc >> 8) == data[offset+length-1]
+    )
+
+
+def locate_start(data):
+    if data[242:252] == b'DJI_LOG_V3':
+        if is_valid_packet(data, 256):
+            return 256
+
+    if len(data) > 128:
+        if is_valid_packet(data, 128):
+            return 128
+
+    for offset in range(0, min(4096, len(data)-16)):
+
+        if is_valid_packet(data, offset):
+            return offset
+
+    return None
+
 class DATRecord:
     def __init__(self, data, start, record_length):
         self.start = start
@@ -37,17 +81,18 @@ class DATRecord:
 def get_dji_dat(files_found, report_folder, seeker, wrap_text):
     data_list = []
     
+    target_file = os.path.dirname(str(files_found[0])) if files_found else ""
     for file_found in files_found:
         file_found = str(file_found)
-        target_file = file_found
         with open(file_found, 'rb') as file:
             data = file.read()
     
             # Check version for the DJI DAT file
-            if data[242:252] == b'DJI_LOG_V3':
-                cur_pos = 256
-            else:
-                cur_pos = 128
+            cur_pos = locate_start(data)
+
+            if cur_pos is None:
+                logfunc(f"No valid packet found in {os.path.basename(file_found)}")
+                continue
             
             # Parsing the records
             while cur_pos < (len(data)-10):
@@ -70,7 +115,6 @@ def get_dji_dat(files_found, report_folder, seeker, wrap_text):
                 record = DATRecord(data, cur_pos, record_len)
                 
                 # Type validation
-                # logfunc(f"[INFO] Valid Record Type: {record.type} at offset {record.start} with length {record.len}")
                 payload = data[record.start+10:record.start+record.len-2]
                 try:
                     payload_decrypt = bytes(map(lambda x: x ^ (record.ticket_no % 256), payload))
@@ -87,9 +131,15 @@ def get_dji_dat(files_found, report_folder, seeker, wrap_text):
                                 
                                 year, month, day = int(date_raw / 10000), int((date_raw / 100) % 100), date_raw % 100
                                 hour, minute, second = int(time_raw / 10000), int((time_raw / 100) % 100), time_raw % 100
-                                timestamp = f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d}"
-                                
-                                data_list.append((timestamp, latitude, longitude, record.type, os.path.basename(file_found)))
+                                if (1 <= month <= 12 and
+                                        1 <= day   <= 31 and
+                                        0 <= hour  <= 23 and
+                                        0 <= minute <= 59 and
+                                        0 <= second <= 59):
+                                        # cur_pos += record_len
+                                        # continue
+                                        timestamp = f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d}"
+                                        data_list.append((timestamp, latitude, longitude, record.type, os.path.basename(file_found)))
                 except Exception as e:
                     pass
                 cur_pos += record_len

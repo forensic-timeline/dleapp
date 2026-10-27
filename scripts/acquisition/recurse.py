@@ -24,22 +24,6 @@ def convert_time(ts):
         return ""
     return datetime.datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
 
-# Use to extract files from the image    
-def extract_data(fs_obj, out_path):
-    try:
-        os.makedirs(os.path.dirname(out_path), exist_ok=True)
-        with open(out_path, 'wb') as f:
-            offset = 0
-            size = fs_obj.info.meta.size
-            while offset < size:
-                to_read = min(1024 * 1024, size - offset)
-                data = fs_obj.read_random(offset, to_read)
-                if not data:
-                    break
-                f.write(data)
-                offset += len(data)
-    except Exception as e:
-        print(f"\n[ERROR] Could not extract file to {out_path} : {e}")
 
 def find_offset(img_info):
     """
@@ -54,7 +38,7 @@ def find_offset(img_info):
         offset = i * sector_size
         try:
             # Read 512 byte per sector
-            data = img_info.read()
+            data = img_info.read(offset, sector_size)
             if not data or len(data) < sector_size:
                 break
             
@@ -65,7 +49,7 @@ def find_offset(img_info):
                 if b'FAT32' in data[54:82] or b'MSDOS' in data[3:11] or b'mfks' in data[3:11]:
                     return offset
         except Exception:
-            continue
+            print(f"[Error] Error reading sector at offset {offset}")
     return None
 
 
@@ -109,15 +93,31 @@ def recurseFiles(part, fs, dirs, parent, data, out_dir=None):
                     print(f"[INFO] Extracting: {name}")
                     extract_data(fs_obj, dest_path)
                     
-                    data.append([f"Partition_{part}", name, "FILE", "", "", fs_obj.info.meta.size, path])
+                    data.append([f"Partition_{part}", name, "FILE", created, modified, size, path])
                 filetype = "FILE"
             
         except Exception as e:
             print(f"\n[ERROR] Could not process file system object: {e}")
 
+# Use to extract files from the image    
+def extract_data(fs_obj, out_path):
+    try:
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        with open(out_path, 'wb') as f:
+            offset = 0
+            size = fs_obj.info.meta.size
+            while offset < size:
+                to_read = min(1024 * 1024, size - offset)
+                data = fs_obj.read_random(offset, to_read)
+                if not data:
+                    break
+                f.write(data)
+                offset += len(data)
+    except Exception as e:
+        print(f"\n[ERROR] Could not extract file to {out_path} : {e}")
 
 def run_extraction(evidence_file, evidence_type, outdir):
-    if evidence_type == "ewf":
+    if evidence_type.lower() in ("ewf", "e01"):
         filename = pyewf.glob(evidence_file)
         handle = pyewf.handle()
         handle.open(filename)
@@ -137,8 +137,8 @@ def run_extraction(evidence_file, evidence_type, outdir):
                     fs = pytsk3.FS_Info(img_info, offset=p.start * 512)
                     root = fs.open_dir(path="/")
                     recurseFiles(p.addr, fs, root, "/", all_data, outdir)
-                except: 
-                    pass
+                except Exception as e: 
+                    print(f"[ERROR] Partition {p.addr}: {e}")
     except Exception as e:
         print(f"Volume info failed: {e}")
         try:
@@ -152,11 +152,11 @@ def run_extraction(evidence_file, evidence_type, outdir):
                 try:
                     fs = pytsk3.FS_Info(img_info, offset=offset)
                     root = fs.open_dir(path="/")
-                    recurseFiles(f"RAW_OFFSET_{offset}", root, fs, "/", all_data, outdir)
+                    recurseFiles(f"RAW_OFFSET_{offset}", fs, root, "/", all_data, outdir)
                 except Exception as err:
                     print(f"[ERROR] Offset found but directory corrupted: {err}")
             else:
-                print("[ERROR] Filesystem does not contain any MBR")        
+                print("Unable to locate valid filesystem")       
     return all_data
 
 if __name__ == '__main__':
