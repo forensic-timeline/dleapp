@@ -6,12 +6,13 @@ import typing
 import scripts.report as report
 import traceback
 import sys
+import importlib
 import scripts.acquisition.recurse as recurse
 import scripts.plugin_loader as plugin_loader
 
 from scripts.search_files import *
 from scripts.ilapfuncs import *
-from scripts.version_info import aleapp_version
+from scripts.version_info import dleapp_version
 from time import process_time, gmtime, strftime, perf_counter
 from scripts.lavafuncs import *
 from scripts.artifacts.DjiDat import get_dji_dat
@@ -152,11 +153,7 @@ def main():
                         help=("Generate a text file list of artifact paths. "
                               "This argument is meant to be used alone, without any other arguments."))
     parser.add_argument('--custom_output_folder', required=False, action="store", help="Custom name for the output folder")
-
-    loader = plugin_loader.PluginLoader()
-    available_plugins = list(loader.plugins)
-    profile_filename = None
-    casedata = {}
+    parser.add_argument('--gui', '--GUI', required=False, action="store_true", dest="launch_gui", help="Launch GUI display for DLEAPP")
 
     # Check if no arguments were provided
     if len(sys.argv) == 1:
@@ -164,6 +161,15 @@ def main():
         sys.exit()
 
     args = parser.parse_args()
+
+    if args.launch_gui:
+        importlib.import_module("dleappGUI")
+        return
+
+    loader = plugin_loader.PluginLoader()
+    available_plugins = list(loader.plugins)
+    profile_filename = None
+    casedata = {}
 
     plugins = []
     plugins_parsed_first = []
@@ -307,7 +313,7 @@ def crunch_artifacts(
     logfunc('Processing started. Please wait. This may take a few minutes...')
 
     logfunc('\n--------------------------------------------------------------------------------------')
-    logfunc(f'DLEAPP v1.0: Drone Logs, Events, and Protobuf Parser')
+    logfunc(f'DLEAPP {dleapp_version}: Drone Logs, Events, and Protobuf Parser')
     logfunc('Objective: Triage Drone Full System Extractions.')
     logfunc('Based on ALEAPP by Alexis Brignoni and Yogesh Khatri\n')
     logdevinfo()

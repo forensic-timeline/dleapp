@@ -1,4 +1,6 @@
 import tkinter as tk
+import os
+import sys
 import typing
 import json
 import dleapp
@@ -9,11 +11,14 @@ import scripts.plugin_loader as plugin_loader
 
 from PIL import Image, ImageTk
 from tkinter import ttk, filedialog as tk_filedialog, messagebox as tk_msgbox
-from scripts.version_info import aleapp_version, dleapp_version
+from scripts.version_info import dleapp_version
 from scripts.search_files import *
 from scripts.modules_to_exclude import modules_to_exclude
 from scripts.lavafuncs import *
+from pathlib import Path
 
+PACKAGE_DIR = Path(__file__).resolve().parent
+ASSETS_DIR = PACKAGE_DIR / "assets"
 
 def pickModules():
     '''Create a list of available modules:
@@ -176,12 +181,17 @@ def open_website(url):
 
 
 def resource_path(filename):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        base_path = Path(sys._MEIPASS) / "assets"
+    else:
+        base_path = ASSETS_DIR
 
-    return os.path.join(base_path, 'assets', filename)
+    asset_path = base_path / filename
+
+    if not asset_path.is_file():
+        raise FileNotFoundError(f"Required GUI asset not found: {asset_path}")
+
+    return str(asset_path)
 
 def process(casedata):
     '''Execute selected modules and create reports'''
@@ -337,6 +347,7 @@ def case_data():
                                                          filetypes=(('All supported files', '*.png *.jpg *.gif'), ))
 
         if logo_path and os.path.exists(logo_path):
+            agency_logo_base64_encoded = None
             agency_logo_load_error = None
             with open(logo_path, 'rb') as agency_logo_file:
                 agency_logo_mimetype = guess_mime(agency_logo_file)

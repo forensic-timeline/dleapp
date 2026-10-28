@@ -6,7 +6,7 @@ import shutil
 from collections import OrderedDict
 from scripts.html_parts import *
 from scripts.ilapfuncs import logfunc
-from scripts.version_info import aleapp_version, aleapp_contributors, dleapp_version
+from scripts.version_info import aleapp_contributors, dleapp_version
 from scripts.report_icons import icon_mappings, feather_icon_names
 
 def get_icon_name(category, artifact):
