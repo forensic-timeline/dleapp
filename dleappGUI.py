@@ -347,6 +347,7 @@ def case_data():
                                                          filetypes=(('All supported files', '*.png *.jpg *.gif'), ))
 
         if logo_path and os.path.exists(logo_path):
+            agency_logo_base64_encoded = None
             agency_logo_load_error = None
             with open(logo_path, 'rb') as agency_logo_file:
                 agency_logo_mimetype = guess_mime(agency_logo_file)
