@@ -6,7 +6,7 @@ DLEAPP (Drone Logs, Events and Protobuf Parser) is a plugin-based forensic parse
 
 ## Requirements
 
-**Python 3.9 or above** (older versions of 3.x will also work with the exception of one or two modules)
+**Python 3.10 or above**
 
 ### Dependencies
 
@@ -29,6 +29,13 @@ $ python3 dleapp.py -t <raw | ewf> -i <path_to_extraction> -o <path_for_report_o
 ```
 $ python3 dleappGUI.py
 ```
+
+To launch the GUI after installing DLEAPP as a package, run:
+
+```
+$ dleapp --gui
+```
+both `--gui` and `--GUI` are accepted.
 
 ### Help
 

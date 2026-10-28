@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dleapp"
-version = "1.1.0"
+version = "1.1.1"
 description = "Digital forensics parser for DJI drone artifacts"
 readme = "README.md"
 requires-python = ">=3.10"
